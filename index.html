@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IDRI3 TON</title>
+  <title>Money Tap Earn</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body { margin: 0; font-family: sans-serif; background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e); color: white; text-align: center; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
@@ -12,13 +12,19 @@
     button { padding: 20px 40px; font-size: 1.8em; margin: 15px; background: #00ffea; color: black; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 0 20px #00ffea; transition: all 0.2s; }
     button:active { transform: scale(1.1); box-shadow: 0 0 40px #00ffea; }
     #energy { font-size: 1.5em; margin: 10px; }
+    #connect-btn { background: #28a745; color: white; box-shadow: 0 0 20px #28a745; }
+    #wallet-status { font-size: 1.5em; margin: 20px; color: #28a745; }
   </style>
 </head>
 <body>
-  <h1>IDRI3 TON</h1>
+  <h1>Money Tap Earn</h1>
   <div id="coins">0</div>
   <div id="energy">انرژی: 1000/1000</div>
   <button onclick="tap()">TAP!</button>
+
+  <!-- دکمه اتصال والت -->
+  <button id="connect-btn">اتصال به Tonkeeper</button>
+  <div id="wallet-status">وصل نشده</div>
 
   <script>
     const tg = window.Telegram.WebApp;
@@ -39,6 +45,27 @@
         tg.showAlert("انرژی تموم شده! صبر کن");
       }
     }
+  </script>
+
+  <!-- اتصال TON Connect -->
+  <script type="module">
+    import { TonConnectUI } from 'https://esm.sh/@tonconnect/ui@latest';
+
+    const tonConnectUI = new TonConnectUI({
+      manifestUrl: '/tonconnect-manifest.json'
+    });
+
+    document.getElementById('connect-btn').addEventListener('click', () => {
+      tonConnectUI.openModal();
+    });
+
+    tonConnectUI.onStatusChange(wallet => {
+      if (wallet) {
+        const address = wallet.account.address;
+        document.getElementById('wallet-status').innerText = `وصل شد: \( {address.slice(0,6)}... \){address.slice(-4)}`;
+        tg.showAlert("والد وصل شد!");
+      }
+    });
   </script>
 </body>
 </html>
